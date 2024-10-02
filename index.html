@@ -3,65 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invoice Generator Login</title>
+    <title>Invoice Generator</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #000;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
-            color: #fff;
-        }
-        .login-container {
-            background-color: #222;
+            flex-direction: column;
+            background-color: #f4f4f4;
             padding: 20px;
-            border-radius: 8px;
-            width: 300px;
-            text-align: center;
         }
-        .login-container input[type="text"],
-        .login-container input[type="password"] {
+        #template-container {
+            position: relative;
+            width: 800px;
+            height: 600px;
+        }
+        #template {
             width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
-            border: 1px solid #333;
-            outline: none;
+            height: 100%;
         }
-        .login-container button {
-            padding: 10px 20px;
+        .input-field {
+            margin-bottom: 10px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #28a745;
+            color: white;
             border: none;
-            background-color: #4CAF50;
-            color: #fff;
-            border-radius: 5px;
             cursor: pointer;
-            width: 100%;
-        }
-        .login-container button:hover {
-            background-color: #45a049;
-        }
-        .error-message {
-            color: #f00;
-            margin-top: 10px;
         }
     </style>
 </head>
 <body>
 
-<div class="login-container">
-    <img src="logo.png" alt="Logo" width="100px" />
-    <form id="loginForm">
-        <input type="text" id="username" placeholder="Username" required>
-        <input type="password" id="password" placeholder="Password" required>
-        <button type="submit">Login</button>
-        <p class="error-message" id="errorMessage"></p>
-    </form>
-</div>
+    <div>
+        <div class="input-field">
+            <label for="date">Date:</label>
+            <input type="text" id="date" placeholder="DD/MM/YY">
+        </div>
+        <div class="input-field">
+            <label for="username">Username:</label>
+            <input type="text" id="username" placeholder="MG MG">
+        </div>
+        <div class="input-field">
+            <label for="usermail">Usermail:</label>
+            <input type="text" id="usermail" placeholder="MG@MG.COM">
+        </div>
+        <div class="input-field">
+            <label for="end-date">End Date:</label>
+            <input type="text" id="end-date" placeholder="DD/MM/YY">
+        </div>
+        <div class="input-field">
+            <label for="invoice-id">Invoice ID:</label>
+            <input type="text" id="invoice-id" placeholder="AEIOU123">
+        </div>
+        <div class="input-field">
+            <label for="payment-method">Payment Method:</label>
+            <input type="text" id="payment-method" placeholder="Cash">
+        </div>
+        <div class="input-field">
+            <label for="paid-amount">Paid Amount:</label>
+            <input type="text" id="paid-amount" placeholder="10000">
+        </div>
+        <div class="input-field">
+            <label for="issuer">Issuer:</label>
+            <input type="text" id="issuer" placeholder="Issuer Name">
+        </div>
+        <div class="input-field">
+            <label for="note">Note:</label>
+            <input type="text" id="note" placeholder="Special notes...">
+        </div>
+        <button onclick="generateInvoice()">Generate Invoice</button>
+    </div>
 
-<script src="script.js"></script>
+    <div id="template-container">
+        <canvas id="invoiceCanvas" width="800" height="600"></canvas>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+    <script>
+        function generateInvoice() {
+            // Load the template image
+            const canvas = document.getElementById('invoiceCanvas');
+            const ctx = canvas.getContext('2d');
+            const templateImage = new Image();
+            templateImage.src = '/mnt/data/image.png';  // Path to your template image
+            templateImage.onload = function() {
+                // Draw the template on the canvas
+                ctx.drawImage(templateImage, 0, 0, canvas.width, canvas.height);
+                
+                // Get input values
+                const date = document.getElementById('date').value;
+                const username = document.getElementById('username').value;
+                const usermail = document.getElementById('usermail').value;
+                const endDate = document.getElementById('end-date').value;
+                const invoiceId = document.getElementById('invoice-id').value;
+                const paymentMethod = document.getElementById('payment-method').value;
+                const paidAmount = document.getElementById('paid-amount').value;
+                const issuer = document.getElementById('issuer').value;
+                const note = document.getElementById('note').value;
+                
+                // Define text style
+                ctx.font = '20px Arial';
+                ctx.fillStyle = 'black';
+                ctx.textAlign = 'center';
+                
+                // Place text on the image (adjust x, y positions as needed)
+                ctx.fillText(date, 650, 150);           // Date
+                ctx.fillText(username, 650, 180);       // Username
+                ctx.fillText(usermail, 650, 210);       // Usermail
+                ctx.fillText(endDate, 650, 240);        // End Date
+                ctx.fillText(invoiceId, 650, 270);      // Invoice ID
+                ctx.fillText(paymentMethod, 650, 370);  // Payment Method
+                ctx.fillText(paidAmount, 650, 400);     // Paid Amount
+                ctx.fillText(issuer, 650, 430);         // Issuer
+                ctx.fillText(note, 400, 500);           // Note (adjusted to center)
+                
+                // Generate the JPG and download
+                html2canvas(canvas, {
+                    onrendered: function(canvas) {
+                        const link = document.createElement('a');
+                        link.href = canvas.toDataURL('image/jpeg');
+                        link.download = 'invoice.jpg';
+                        link.click();
+                    }
+                });
+            };
+        }
+    </script>
 
 </body>
 </html>
